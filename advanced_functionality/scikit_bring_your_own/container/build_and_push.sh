@@ -6,6 +6,8 @@
 # The argument to this script is the image name. This will be used as the image on the local
 # machine and combined with the account and region to form the repository name for ECR.
 image=$1
+#Indicate on which profile you want to run your sagemaker container
+profile=$2
 
 if [ "$image" == "" ]
 then
@@ -17,7 +19,7 @@ chmod +x decision_trees/train
 chmod +x decision_trees/serve
 
 # Get the account number associated with the current IAM credentials
-account=$(aws sts get-caller-identity --query Account --output text)
+account=$(aws sts get-caller-identity --query Account --output text --profile ${profile})
 
 if [ $? -ne 0 ]
 then
@@ -34,15 +36,15 @@ fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:latest"
 
 # If the repository doesn't exist in ECR, create it.
 
-aws ecr describe-repositories --repository-names "${image}" > /dev/null 2>&1
+aws ecr describe-repositories --repository-names "${image}" --profile ${profile} > /dev/null 2>&1
 
 if [ $? -ne 0 ]
 then
-    aws ecr create-repository --repository-name "${image}" > /dev/null
+    aws ecr create-repository --repository-name "${image}" --profile ${profile} > /dev/null
 fi
 
 # Get the login command from ECR and execute it directly
-$(aws ecr get-login --region ${region} --no-include-email)
+$(aws ecr get-login --region ${region} --no-include-email --profile ${profile})
 
 # Build the docker image locally with the image name and then push it to ECR
 # with the full name.
