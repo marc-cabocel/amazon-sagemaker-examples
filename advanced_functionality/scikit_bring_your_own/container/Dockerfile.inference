@@ -34,5 +34,9 @@ ENV PYTHONDONTWRITEBYTECODE=TRUE
 ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
-COPY decision_trees /opt/program
+COPY decision_trees/nginx.conf /opt/program/
+COPY decision_trees/predictor.py /opt/program/
+COPY decision_trees/serve /opt/program/
+COPY decision_trees/wsgi.py /opt/program/
+
 WORKDIR /opt/program

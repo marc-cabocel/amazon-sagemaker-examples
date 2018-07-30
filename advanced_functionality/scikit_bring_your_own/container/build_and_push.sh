@@ -8,6 +8,8 @@
 image=$1
 #Indicate on which profile you want to run your sagemaker container
 profile=$2
+tag=$3
+dockerfile=$4
 
 if [ "$image" == "" ]
 then
@@ -32,7 +34,7 @@ region=$(aws configure get region)
 region=${region:-us-west-2}
 
 
-fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:latest"
+fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:${tag}"
 
 # If the repository doesn't exist in ECR, create it.
 
@@ -49,7 +51,7 @@ $(aws ecr get-login --region ${region} --no-include-email --profile ${profile})
 # Build the docker image locally with the image name and then push it to ECR
 # with the full name.
 
-docker build  -t ${image} .
+docker build -f ${dockerfile} -t ${image} .
 docker tag ${image} ${fullname}
 
 docker push ${fullname}
