@@ -1,0 +1,3 @@
+Starting the inference server with 2 workers.
+Invoked with 29 records
+172.17.0.1 - - [27/Jul/2018:18:46:57 +0000] "POST /invocations HTTP/1.1" 200 295 "-" "curl/7.54.0"
