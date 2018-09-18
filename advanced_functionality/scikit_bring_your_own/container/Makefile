@@ -82,7 +82,7 @@ model:
 		aws sagemaker create-model \
 		--model-name ${inference_name} \
 		--primary-container \
-				Image=${training_image},ModelDataUrl=s3://${bucket}/models/TrainingDecisionTree-2842/output/model.tar.gz \
+				Image=${training_image},ModelDataUrl=s3://${bucket}/models/TrainingDecisionTree-5620/output/model.tar.gz \
 		--execution-role-arn ${training_role_arn} \
 		--profile ${profile}
 

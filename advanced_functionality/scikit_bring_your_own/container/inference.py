@@ -9,8 +9,8 @@ session = boto3.Session(profile_name='Test')
 
 # Convert the dataframe to csv data
 test_file = io.BytesIO()
-inference = ["6.4", "3.1",
-             "5.5", "1.8"]
+inference = ["0.2", "0.2",
+             "0.2", "0.2"]
 
 writer = csv.writer(test_file, quoting=csv.QUOTE_NONNUMERIC, delimiter=',')
 writer.writerow(inference)
