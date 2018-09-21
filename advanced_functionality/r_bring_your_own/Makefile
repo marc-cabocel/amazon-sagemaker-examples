@@ -14,7 +14,7 @@ profile = Test
 region = eu-west-1
 account_number = $(shell aws sts get-caller-identity --profile ${profile} | jq --raw-output '.Account')
 bucket = marc-stationf-sagemaker
-image = r_training_inference
+image = r-inference2
 tag = latest
 model_name = marc-test
 random = $(shell echo $$RANDOM)
@@ -36,15 +36,35 @@ inference_name = Inference-MARS
 inference_instance_type = ml.m4.xlarge
 inference_instance_count = 1
 
+###############
+#### Local ####
+###############
+
+### local_build
+local_build:
+		$(call blue, "building image...")
+		./local_build.sh ${image} ${profile} ${tag} ${dockerfile}
+
+### Local Training
+local_training:
+		$(call blue, "Locally testing container ...")
+		cd ./local_test; ./train_local.sh ${image}
+
+### Local prediction
+local_serve:
+		$(call blue, "Locally server ...")
+		cd ./local_test; ./serve_local.sh ${image}
+
+### Local inference
+local_inference:
+		$(call blue, "Locally running inference ...")
+		cd ./local_test; ./predict.sh payload.csv
+
 ### Build docker image and load it to ECR
 build:
 	  $(call blue, "building and pushing image...")
 		./build_and_push.sh ${image} ${profile} ${tag} ${dockerfile}
 
-### Training
-local_training:
-	$(call blue, "Locally testing container ...")
-	cd ./local_test; ./train_local.sh ${image}
 
 ### Create S3 bucket
 upload:
@@ -104,6 +124,7 @@ endpoint: endpoint_config
 	    --endpoint-name ${inference_name} \
 	    --endpoint-config-name ${inference_name} \
 			--profile ${profile}
+
 
 
 ### CleanUp

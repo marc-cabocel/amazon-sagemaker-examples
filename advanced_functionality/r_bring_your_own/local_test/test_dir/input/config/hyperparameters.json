@@ -1,1 +1,4 @@
-{}
+{
+  "target": "Sepal.Length",
+  "degree": "2"
+}

@@ -1,5 +1,5 @@
 # Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
 #
 #     http://aws.amazon.com/apache2.0/
@@ -46,30 +46,30 @@ train <- function() {
     # Bring in data
     training_files = list.files(path=training_path, full.names=TRUE)
     training_data = do.call(rbind, lapply(training_files, read.csv))
-    
+
     # Convert to model matrix
     training_X <- model.matrix(~., training_data[, colnames(training_data) != target])
 
     # Save factor levels for scoring
     factor_levels <- lapply(training_data[, sapply(training_data, is.factor), drop=FALSE],
                             function(x) {levels(x)})
-    
+
     # Run multivariate adaptive regression splines algorithm
     model <- mars(x=training_X, y=training_data[, target], degree=degree)
-    
+
     # Generate outputs
     mars_model <- model[!(names(model) %in% c('x', 'residuals', 'fitted.values'))]
     attributes(mars_model)$class <- 'mars'
     save(mars_model, factor_levels, file=paste(model_path, 'mars_model.RData', sep='/'))
     print(summary(mars_model))
 
-    write.csv(model$fitted.values, paste(output_path, 'data/fitted_values.csv', sep='/'), row.names=FALSE)
+    write.csv(model$fitted.values, paste(output_path, 'fitted_values.csv', sep='/'), row.names=FALSE)
     write('success', file=paste(output_path, 'success', sep='/'))}
 
 
 # Setup scoring function
 serve <- function() {
-    app <- plumb(paste(prefix, 'plumber.R', sep='/'))
+    app <- plumb(paste('/opt/program/plumber.R'))
     app$run(host='0.0.0.0', port=8080)}
 
 
