@@ -60,11 +60,19 @@ local_inference:
 		$(call blue, "Locally running inference ...")
 		cd ./local_test; ./predict.sh payload.csv
 
+###############
+#### Build ####
+###############
+
 ### Build docker image and load it to ECR
 build:
 	  $(call blue, "building and pushing image...")
 		./build_and_push.sh ${image} ${profile} ${tag} ${dockerfile}
 
+
+##################
+#### Training ####
+##################
 
 ### Create S3 bucket
 upload:
@@ -98,6 +106,10 @@ training:
 				target=Sepal.Length,degree=2 \
 		--profile ${profile}
 
+#################
+#### Hosting ####
+#################
+
 ### Inference
 JobName = MARS-10474
 
@@ -125,7 +137,9 @@ endpoint: endpoint_config
 	    --endpoint-config-name ${inference_name} \
 			--profile ${profile}
 
-
+#################
+#### CleanUp ####
+#################
 
 ### CleanUp
 delete_endpoint: delete_endpoint_config
