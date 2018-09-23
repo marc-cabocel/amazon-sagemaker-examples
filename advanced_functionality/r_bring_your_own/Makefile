@@ -13,7 +13,7 @@ all: run
 profile = Test
 region = eu-west-1
 account_number = $(shell aws sts get-caller-identity --profile ${profile} | jq --raw-output '.Account')
-bucket = marc-stationf-sagemaker
+bucket = test-mca-dub
 image = r-inference2
 tag = latest
 model_name = marc-test
@@ -21,15 +21,15 @@ random = $(shell echo $$RANDOM)
 dockerfile = Dockerfile
 
 ### Training Parameters
-training_job_name = MARS-${random}
+training_job_name = demoR-MARS-${random}
 training_image = ${account_number}.dkr.ecr.${region}.amazonaws.com/${image}:${tag}
 training_input_mode = File
 training_role_arn = arn:aws:iam::${account_number}:role/service-role/AmazonSageMaker-ExecutionRole-20180301T173668
 training_instance_type = ml.m4.xlarge
 training_instance_count = 1
 training_instance_size = 10
-training_path = demoR/data/training
-model_path = demoR/models
+training_path = sagemaker/demoR/data/train
+model_path = sagemaker/demoR/models
 
 ### Inference parameters
 inference_name = Inference-MARS
@@ -111,7 +111,8 @@ training:
 #################
 
 ### Inference
-JobName = MARS-10474
+### Need to configure JobName below before creating the hosting endpoint
+JobName = demoR-MARS-17283
 
 model:
 		$(call blue, "Create sagemaker model...")
@@ -136,6 +137,17 @@ endpoint: endpoint_config
 	    --endpoint-name ${inference_name} \
 	    --endpoint-config-name ${inference_name} \
 			--profile ${profile}
+
+### Call Endpoint
+call:
+	$(call blue, "Call endpoint...")
+	aws sagemaker-runtime invoke-endpoint \
+	--endpoint-name ${inference_name} \
+	--body file://local_test/payload.csv \
+	--content-type "application/json" \
+	--profile ${profile} \
+	output.json
+
 
 #################
 #### CleanUp ####
